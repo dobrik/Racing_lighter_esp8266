@@ -1,5 +1,6 @@
 .pioenvs
 .piolibdeps
+.idea
 cmake-build-debug
 .travis.yml
 cmake-build-debug-mingw
