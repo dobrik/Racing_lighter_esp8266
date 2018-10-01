@@ -10,9 +10,18 @@
 #include "Light.h"
 #include "../lib/virtualDelay/avdweb_VirtualDelay.h"
 
+enum lighters {
+    FIRST_YELLOW_LIGHT,
+    SECOND_YELLOW_LIGHT,
+    THIRD_YELLOW_LIGHT,
+    GREEN_LIGHT,
+    RED_LIGHT,
+    LIGHTS_COUNT
+};
+
 class LighterManager {
 public:
-    LighterManager(Light *lights);
+    LighterManager(Light _lights[LIGHTS_COUNT]);
 
     void updateLighterState(uint8_t data);
 
@@ -34,30 +43,23 @@ private:
 
     void (LighterManager::* callback)(void);
 
-    Light *FIRST_YELLOW_LIGHT;
-    Light *SECOND_YELLOW_LIGHT;
-    Light *THIRD_YELLOW_LIGHT;
-    Light *GREEN_LIGHT;
-    Light *RED_LIGHT;
-
-    Light *LIGHTER_TEST_STEPS[5] = {
+    uint8_t LIGHTER_TEST_STEPS[5] = {
             FIRST_YELLOW_LIGHT,
             SECOND_YELLOW_LIGHT,
             THIRD_YELLOW_LIGHT,
-            GREEN_LIGHT, RED_LIGHT
+            GREEN_LIGHT,
+            RED_LIGHT
     };
 
-    Light *LIGHTER_START_STEPS[4] = {
+    uint8_t LIGHTER_START_STEPS[4] = {
             FIRST_YELLOW_LIGHT,
             SECOND_YELLOW_LIGHT,
             THIRD_YELLOW_LIGHT,
             GREEN_LIGHT
     };
 
-    const uint8_t FUNCTION_START = 0x01;
-    const uint8_t FUNCTION_TEST = 0x02;
+    Light *lights;
 
-    uint8_t functionExecute = 0x00;
     uint8_t lighterData = 0x00;
     uint8_t lighterTestIteration = 0;
     uint8_t lighterStartIteration = 0;

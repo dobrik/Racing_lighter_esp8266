@@ -2,14 +2,12 @@
 // Created by Dobrik on 9/23/2018.
 //
 
+#include "ESP8266WiFi.h"
 #include "LighterManager.h"
+#define USE_SERIAL Serial
 
-LighterManager::LighterManager(Light *lights) {
-    this->FIRST_YELLOW_LIGHT = &lights[0];
-    this->SECOND_YELLOW_LIGHT = &lights[1];
-    this->THIRD_YELLOW_LIGHT = &lights[2];
-    this->GREEN_LIGHT = &lights[3];
-    this->RED_LIGHT = &lights[4];
+LighterManager::LighterManager(Light _lights[LIGHTS_COUNT]) {
+    lights = _lights;
 }
 
 void LighterManager::loop() {
@@ -23,65 +21,51 @@ void LighterManager::loop() {
 
 void LighterManager::lighterTestStart(int delay) {
     functionDelay = delay;
+    USE_SERIAL.println("lighterTestStart call");
     callback = &LighterManager::lighterTestFunction;
 }
 
 void LighterManager::lighterStart(int delay) {
     functionDelay = delay;
+    USE_SERIAL.println("lighterStart call");
     callback = &LighterManager::lighterStartFunction;
 }
 
 void LighterManager::updateLighterState(uint8_t data) {
-    if ((data & FIRST_YELLOW_LIGHT->dataByte) == FIRST_YELLOW_LIGHT->dataByte) {
-        FIRST_YELLOW_LIGHT->setOn();
-    } else {
-        FIRST_YELLOW_LIGHT->setOff();
-    }
-    if ((data & SECOND_YELLOW_LIGHT->dataByte) == SECOND_YELLOW_LIGHT->dataByte) {
-        SECOND_YELLOW_LIGHT->setOn();
-    } else {
-        SECOND_YELLOW_LIGHT->setOff();
-    }
-    if ((data & THIRD_YELLOW_LIGHT->dataByte) == THIRD_YELLOW_LIGHT->dataByte) {
-        THIRD_YELLOW_LIGHT->setOn();
-    } else {
-        THIRD_YELLOW_LIGHT->setOff();
-    }
-    if ((data & GREEN_LIGHT->dataByte) == GREEN_LIGHT->dataByte) {
-        GREEN_LIGHT->setOn();
-    } else {
-        GREEN_LIGHT->setOff();
-    }
-    if ((data & RED_LIGHT->dataByte) == RED_LIGHT->dataByte) {
-        RED_LIGHT->setOn();
-    } else {
-        RED_LIGHT->setOff();
+    for(int i = 0; i < LIGHTS_COUNT; i++){
+        if ((data & lights[i].dataByte) == lights[i].dataByte) {
+            lights[i].setOn();
+        } else {
+            lights[i].setOff();
+        }
     }
 }
 
 void LighterManager::lighterTestFunction() {
+    USE_SERIAL.println("lighterTestFunction callback call");
     if (lighterTestIteration >= sizeof(LIGHTER_TEST_STEPS)) {
         lighterData = 0x00;
         lighterTestIteration = 0;
         functionDelay = 0;
     } else {
-        lighterData ^= LighterManager::LIGHTER_TEST_STEPS[lighterTestIteration]->dataByte;
+        lighterData ^= lights[LIGHTER_TEST_STEPS[lighterTestIteration]].dataByte;
         lighterTestIteration++;
     }
 
-//    updateLighterState(lighterData);
+    updateLighterState(lighterData);
 
 }
 
 void LighterManager::lighterStartFunction() {
-//    if (lighterStartIteration >= sizeof(LIGHTER_START_STEPS)) {
-//        lighterData = 0x00;
-//        lighterStartIteration = 0;
-//        functionDelay = 0;
-//    } else {
-//        lighterData ^= LIGHTER_START_STEPS[lighterStartIteration]->dataByte;
-//        lighterStartIteration++;
-//    }
-//
-//    updateLighterState(lighterData);
+    USE_SERIAL.println("lighterStartFunction callback call");
+    if (lighterStartIteration >= sizeof(LIGHTER_START_STEPS)) {
+        lighterData = 0x00;
+        lighterStartIteration = 0;
+        functionDelay = 0;
+    } else {
+        lighterData ^= lights[LIGHTER_TEST_STEPS[lighterTestIteration]].dataByte;
+        lighterStartIteration++;
+    }
+
+    updateLighterState(lighterData);
 }

@@ -21,6 +21,7 @@
 #define THIRD_YELLOW_LIGHTER_BYTE 0x04
 #define GREEN_LIGHTER_BYTE 0x08
 #define RED_LIGHTER_BYTE 0x10
+#define USE_SERIAL Serial
 
 /**
  * Data payload packet size is 12 bytes
@@ -50,8 +51,7 @@ ESP8266WiFiMulti WiFiMulti = ESP8266WiFiMulti();
 
 WebSocketsServer webSocket = WebSocketsServer(81);
 
-#define USE_SERIAL Serial
-Light lighters[5] = {
+Light lighters[LIGHTS_COUNT] = {
         Light(YELLOW1_PIN, FIRST_YELLOW_LIGHTER_BYTE),
         Light(YELLOW2_PIN, SECOND_YELLOW_LIGHTER_BYTE),
         Light(YELLOW3_PIN, THIRD_YELLOW_LIGHTER_BYTE),
