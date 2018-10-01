@@ -67,6 +67,7 @@ void sendActionData(uint8_t action, uint8_t payload) {
     uint8_t packet[2] = {
             action, payload
     };
+    USE_SERIAL.printf("Send data '%d'\n", payload);
 
     webSocket.sendBIN(adminNum, packet, sizeof(packet));
 }

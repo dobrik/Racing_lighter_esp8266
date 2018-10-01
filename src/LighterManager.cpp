@@ -38,8 +38,8 @@ void LighterManager::updateLighterState(uint8_t data) {
         } else {
             lights[i].setOff();
         }
-        runEvent(LIGHTER_UPDATE, &data, sizeof(data));
     }
+    runEvent(LIGHTER_UPDATE, &data, sizeof(data));
 }
 
 void LighterManager::onEvent(LighterManagerEvent _event){
