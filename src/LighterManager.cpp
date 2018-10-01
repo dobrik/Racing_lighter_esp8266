@@ -63,7 +63,7 @@ void LighterManager::lighterStartFunction() {
         lighterStartIteration = 0;
         functionDelay = 0;
     } else {
-        lighterData ^= lights[LIGHTER_TEST_STEPS[lighterTestIteration]].dataByte;
+        lighterData ^= lights[LIGHTER_START_STEPS[lighterStartIteration]].dataByte;
         lighterStartIteration++;
     }
 
