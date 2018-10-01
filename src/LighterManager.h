@@ -7,8 +7,13 @@
 
 
 #include <cstdint>
+#include <list>
 #include "Light.h"
 #include "../lib/virtualDelay/avdweb_VirtualDelay.h"
+
+typedef enum {
+    LIGHTER_UPDATE
+} LMEType;
 
 enum lighters {
     FIRST_YELLOW_LIGHT,
@@ -23,6 +28,10 @@ class LighterManager {
 public:
     LighterManager(Light _lights[LIGHTS_COUNT]);
 
+    typedef std::function<void (LMEType event_type, uint8_t * payload, size_t length)> LighterManagerEvent;
+
+    void onEvent(LighterManagerEvent _event);
+
     void updateLighterState(uint8_t data);
 
     void lighterTestStart(int delay = 500);
@@ -35,8 +44,9 @@ public:
     void lighterStartFunction();
 
     void lighterTestFunction();
-
 private:
+    LighterManagerEvent event;
+
     VirtualDelay Delay;
 
     long functionDelay = 0;
@@ -63,6 +73,8 @@ private:
     uint8_t lighterData = 0x00;
     uint8_t lighterTestIteration = 0;
     uint8_t lighterStartIteration = 0;
+
+    void runEvent(LMEType event_type, uint8_t * payload, size_t length);
 };
 
 

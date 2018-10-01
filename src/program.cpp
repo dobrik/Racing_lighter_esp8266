@@ -62,6 +62,7 @@ Light lighters[LIGHTS_COUNT] = {
 LighterManager lighterManger = LighterManager(lighters);
 
 uint8_t adminNum;
+
 void sendActionData(uint8_t action, uint8_t payload) {
     uint8_t packet[2] = {
             action, payload
@@ -74,7 +75,7 @@ void processAction(uint8_t *payload, uint8_t size) {
     if (payload[0] == LIGHTER_START) {
         USE_SERIAL.println("LIGHTER_START");
         lighterManger.lighterStart();
-    }else if(payload[0] == LIGHTER_TEST){
+    } else if (payload[0] == LIGHTER_TEST) {
         USE_SERIAL.println("LIGHTER_TEST");
         lighterManger.lighterTestStart();
     }
@@ -122,6 +123,14 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 
 }
 
+void lighterManagerEvent(LMEType event_type, uint8_t *payload, size_t length) {
+    switch (event_type) {
+        case LIGHTER_UPDATE:
+            sendActionData(LIGHTER_STATE_UPDATE, *payload);
+            break;
+    }
+}
+
 
 uint32_t lastClick = 0;
 
@@ -161,6 +170,7 @@ void setup() {
 
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
+    lighterManger.onEvent(lighterManagerEvent);
 }
 
 void loop() {

@@ -38,6 +38,19 @@ void LighterManager::updateLighterState(uint8_t data) {
         } else {
             lights[i].setOff();
         }
+        runEvent(LIGHTER_UPDATE, &data, sizeof(data));
+    }
+}
+
+void LighterManager::onEvent(LighterManagerEvent _event){
+    event = _event;
+}
+
+void LighterManager::runEvent(LMEType event_type, uint8_t * payload, size_t length) {
+    USE_SERIAL.printf("Event run type: '%d' \n", event_type);
+    if(event) {
+        USE_SERIAL.println("Event run callback");
+        event(event_type, payload, length);
     }
 }
 
