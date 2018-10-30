@@ -31,17 +31,6 @@ void LighterManager::lighterStart(int delay) {
     callback = &LighterManager::lighterStartFunction;
 }
 
-void LighterManager::updateLighterState(uint8_t data) {
-    for(int i = 0; i < LIGHTS_COUNT; i++){
-        if ((data & lights[i].dataByte) == lights[i].dataByte) {
-            lights[i].setOn();
-        } else {
-            lights[i].setOff();
-        }
-    }
-    runEvent(LIGHTER_UPDATE, &data, sizeof(data));
-}
-
 void LighterManager::onEvent(LighterManagerEvent _event){
     event = _event;
 }
@@ -65,8 +54,7 @@ void LighterManager::lighterTestFunction() {
         lighterTestIteration++;
     }
 
-    updateLighterState(lighterData);
-
+    runEvent(LIGHTER_UPDATE, &lighterData, sizeof(lighterData));
 }
 
 void LighterManager::lighterStartFunction() {
@@ -80,5 +68,5 @@ void LighterManager::lighterStartFunction() {
         lighterStartIteration++;
     }
 
-    updateLighterState(lighterData);
+    runEvent(LIGHTER_UPDATE, &lighterData, sizeof(lighterData));
 }

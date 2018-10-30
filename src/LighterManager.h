@@ -32,8 +32,6 @@ public:
 
     void onEvent(LighterManagerEvent _event);
 
-    void updateLighterState(uint8_t data);
-
     void lighterTestStart(int delay = 500);
 
     void lighterStart(int delay = 500);

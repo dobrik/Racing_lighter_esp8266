@@ -4,17 +4,23 @@
 
 #include "ESP8266WiFi.h"
 #include "Hash.h"
+#include "SPI.h"
 #include "Light.h"
 #include "LighterManager.h"
 #include "ESP8266WiFiMulti.h"
 #include "../lib/ws/src/WebSocketsServer.h"
-#include "../lib/virtualDelay/avdweb_VirtualDelay.h"
 
-#define YELLOW1_PIN 5
-#define YELLOW2_PIN 4
-#define YELLOW3_PIN 0
+#define YELLOW1_PIN 2
+#define YELLOW2_PIN 2
+#define YELLOW3_PIN 2
 #define GREEN_PIN 2
-#define RED_PIN 14
+#define RED_PIN 2
+
+#define CLOCK_PIN 14
+#define DATA_PIN 4
+#define LATCH_PIN 12
+
+#define BUTTON_PIN 5
 
 #define FIRST_YELLOW_LIGHTER_BYTE 0x01
 #define SECOND_YELLOW_LIGHTER_BYTE 0x02
@@ -52,23 +58,23 @@ ESP8266WiFiMulti WiFiMulti = ESP8266WiFiMulti();
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 Light lighters[LIGHTS_COUNT] = {
-        Light(YELLOW1_PIN, FIRST_YELLOW_LIGHTER_BYTE),
-        Light(YELLOW2_PIN, SECOND_YELLOW_LIGHTER_BYTE),
-        Light(YELLOW3_PIN, THIRD_YELLOW_LIGHTER_BYTE),
-        Light(GREEN_PIN, GREEN_LIGHTER_BYTE),
-        Light(RED_PIN, RED_LIGHTER_BYTE)
+        Light(FIRST_YELLOW_LIGHTER_BYTE),
+        Light(SECOND_YELLOW_LIGHTER_BYTE),
+        Light(THIRD_YELLOW_LIGHTER_BYTE),
+        Light(GREEN_LIGHTER_BYTE),
+        Light(RED_LIGHTER_BYTE)
 };
 
 LighterManager lighterManger = LighterManager(lighters);
 
 uint8_t adminNum;
 
-void sendActionData(uint8_t action, uint8_t payload) {
+void sendWebSocketActionData(uint8_t action, uint8_t payload) {
     uint8_t packet[2] = {
             action, payload
     };
-    USE_SERIAL.printf("Send data '%d'\n", payload);
-
+    USE_SERIAL.printf("Send action packet[0] '%d'\n", packet[0]);
+    USE_SERIAL.printf("Send data packet[1] '%d'\n", packet[1]);
     webSocket.sendBIN(adminNum, packet, sizeof(packet));
 }
 
@@ -124,32 +130,39 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 
 }
 
+void lighterStateChange(uint8_t *payload);
+
 void lighterManagerEvent(LMEType event_type, uint8_t *payload, size_t length) {
     switch (event_type) {
         case LIGHTER_UPDATE:
-            sendActionData(LIGHTER_STATE_UPDATE, *payload);
+            USE_SERIAL.printf("Payload send: '%d' \n", *payload);
+            sendWebSocketActionData(LIGHTER_STATE_UPDATE, *payload);
+            lighterStateChange(payload);
             break;
     }
+}
+
+void lighterStateChange(uint8_t *payload) {
+    digitalWrite(LATCH_PIN, LOW);
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, *payload);
+    digitalWrite(LATCH_PIN, HIGH);
 }
 
 
 uint32_t lastClick = 0;
 
+
 void testToggle() {
     uint16_t buttonDebouce = 200;
     if ((millis() - lastClick) > buttonDebouce) {
         USE_SERIAL.println("Toggle emit");
-        lighterManger.lighterTestStart(500);
+        lighterManger.lighterTestStart();
     }
     lastClick = millis();
 }
 
 void setup() {
     USE_SERIAL.begin(115200);
-
-    pinMode(13, INPUT);
-    attachInterrupt(13, testToggle, ONHIGH);
-
     USE_SERIAL.setDebugOutput(true);
     USE_SERIAL.println();
     USE_SERIAL.println();
@@ -168,6 +181,19 @@ void setup() {
     while (WiFiMulti.run() != WL_CONNECTED) {
         delay(100);
     }
+
+    pinMode(BUTTON_PIN, INPUT);
+    attachInterrupt(BUTTON_PIN, testToggle, ONLOW);
+
+    /**
+     * 74HC595 begin
+     */
+    pinMode(CLOCK_PIN, OUTPUT);
+    pinMode(DATA_PIN, OUTPUT);
+    pinMode(LATCH_PIN, OUTPUT);
+    /**
+     * 74HC595 end
+     */
 
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
