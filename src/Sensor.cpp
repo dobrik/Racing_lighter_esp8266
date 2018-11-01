@@ -5,9 +5,10 @@
 #include <Arduino.h>
 #include "Sensor.h"
 
-Sensor::Sensor(uint8_t sensorPin) {
+Sensor::Sensor(uint8_t sensorPin, Light *_light) {
     pinMode(sensorPin, INPUT);
     pin = sensorPin;
+    light = _light;
 }
 
 void Sensor::check(uint16_t checkInterval) {
@@ -16,7 +17,7 @@ void Sensor::check(uint16_t checkInterval) {
 
         switch (digitalRead(pin)) {
             case HIGH:
-                runEvent(SENSOR_ACTIVE);
+                runEvent(SENSOR_ENABLED);
                 break;
             case LOW:
                 runEvent(SENSOR_DISABLED);
@@ -28,6 +29,10 @@ void Sensor::check(uint16_t checkInterval) {
 
 void Sensor::runEvent(SEType event_type) {
     if (event) {
-        event(event_type);
+        event(event_type, light);
     }
+}
+
+void Sensor::onEvent(Sensor::SensorEvent _event) {
+    event = _event;
 }

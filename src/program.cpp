@@ -28,8 +28,8 @@
 
 /**
  * Data payload packet size is 12 bytes
- * Last 4 bytes is action type
- * First 8 bytes is data payload
+ * First 4 bytes is action type
+ * Last 8 bytes is data payload
  */
 
 enum WS_ACTIONS_EMIT {

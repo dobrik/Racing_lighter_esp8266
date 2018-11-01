@@ -9,9 +9,10 @@
 #include <cstdint>
 #include <functional>
 #include <Arduino.h>
+#include "Light.h"
 
 typedef enum {
-    SENSOR_ACTIVE = HIGH,
+    SENSOR_ENABLED = HIGH,
     SENSOR_DISABLED = LOW
 } SEType;
 
@@ -19,9 +20,9 @@ typedef enum {
 class Sensor {
 
 public:
-    typedef std::function<void (SEType event_type)> SensorEvent;
-
-    Sensor(uint8_t sensorPin);
+    typedef std::function<void (SEType event_type, Light *_light)> SensorEvent;
+    Sensor(uint8_t sensorPin, Light *_light);
+    void onEvent(SensorEvent _event);
 
     void check(uint16_t checkInterval);
 
@@ -29,6 +30,8 @@ public:
     int current_state = LOW;
 private:
     SensorEvent event;
+
+    Light *light;
 
     uint32_t lastCheck = 0;
 
