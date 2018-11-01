@@ -2,17 +2,17 @@
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="true">
     <generated>
-      <config projectName="ws" targetName="PLATFORMIO_REBUILD_PROJECT_INDEX" />
-      <config projectName="ws" targetName="PLATFORMIO_BUILD" />
-      <config projectName="ws" targetName="PLATFORMIO_UPLOAD" />
       <config projectName="ws" targetName="PLATFORMIO_UPLOADFS" />
-      <config projectName="ws" targetName="PLATFORMIO" />
+      <config projectName="ws" targetName="PLATFORMIO_REBUILD_PROJECT_INDEX" />
       <config projectName="ws" targetName="ws" />
-      <config projectName="ws" targetName="PLATFORMIO_TEST" />
-      <config projectName="ws" targetName="PLATFORMIO_CLEAN" />
-      <config projectName="ws" targetName="DEBUG" />
-      <config projectName="ws" targetName="PLATFORMIO_PROGRAM" />
       <config projectName="ws" targetName="PLATFORMIO_UPDATE_ALL" />
+      <config projectName="ws" targetName="PLATFORMIO_TEST" />
+      <config projectName="ws" targetName="DEBUG" />
+      <config projectName="ws" targetName="PLATFORMIO_CLEAN" />
+      <config projectName="ws" targetName="PLATFORMIO_UPLOAD" />
+      <config projectName="ws" targetName="PLATFORMIO" />
+      <config projectName="ws" targetName="PLATFORMIO_BUILD" />
+      <config projectName="ws" targetName="PLATFORMIO_PROGRAM" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -21,14 +21,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec922180-b3d3-40f1-af0b-2568113a9075" name="Default" comment="First commit">
+    <list default="true" id="ec922180-b3d3-40f1-af0b-2568113a9075" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/src/Sensor.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Sensor.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platformio.ini" beforeDir="false" afterPath="$PROJECT_DIR$/platformio.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Light.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Light.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Light.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Light.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Lighter.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Lighter.h" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LighterManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/LighterManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/LighterManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/LighterManager.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/program.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/program.cpp" afterDir="false" />
@@ -56,17 +53,20 @@
       <file leaf-file-name="LighterManager.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LighterManager.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="371">
-              <caret line="70" column="23" selection-start-line="70" selection-start-column="12" selection-end-line="70" selection-end-column="23" />
+            <state relative-caret-position="391">
+              <caret line="44" column="29" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="29" />
+              <folding>
+                <element signature="e#100#118#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LighterManager.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="LighterManager.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/LighterManager.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="47" column="61" lean-forward="true" selection-start-line="47" selection-start-column="61" selection-end-line="47" selection-end-column="61" />
+            <state relative-caret-position="187">
+              <caret line="14" column="35" selection-start-line="14" selection-start-column="35" selection-end-line="14" selection-end-column="35" />
               <folding>
                 <element signature="e#42#66#0" expanded="true" />
               </folding>
@@ -77,8 +77,8 @@
       <file leaf-file-name="program.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/program.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="138" column="48" lean-forward="true" selection-start-line="138" selection-start-column="48" selection-end-line="138" selection-end-column="48" />
+            <state relative-caret-position="214">
+              <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="147" selection-end-column="49" />
               <folding>
                 <element signature="e#43#67#0" expanded="true" />
               </folding>
@@ -86,13 +86,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SPI.h" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/.platformio/packages/framework-arduinoespressif8266/libraries/SPI/SPI.h">
+      <file leaf-file-name="Sensor.cpp" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Sensor.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1173">
-              <caret line="69" column="40" selection-start-line="69" selection-start-column="40" selection-end-line="69" selection-end-column="40" />
+            <state relative-caret-position="187">
+              <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
               <folding>
-                <element signature="e#938#958#0" expanded="true" />
+                <element signature="e#42#62#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Sensor.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Sensor.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="425">
+              <caret line="25" column="15" selection-start-line="25" selection-start-column="15" selection-end-line="25" selection-end-column="37" />
+              <folding>
+                <element signature="e#84#102#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -127,6 +139,7 @@
       <find>updateLighterState</find>
       <find>runEvent</find>
       <find>lighterData</find>
+      <find>LIGHTER_START</find>
     </findStrings>
     <dirStrings>
       <dir>C:\Users\Dobrik\Documents\Esp8266\ws\src</dir>
@@ -147,9 +160,11 @@
         <option value="$PROJECT_DIR$/platformio.ini" />
         <option value="$PROJECT_DIR$/src/Light.cpp" />
         <option value="$PROJECT_DIR$/src/Light.h" />
-        <option value="$PROJECT_DIR$/src/LighterManager.cpp" />
         <option value="$PROJECT_DIR$/src/program.cpp" />
+        <option value="$PROJECT_DIR$/src/LighterManager.cpp" />
         <option value="$PROJECT_DIR$/src/LighterManager.h" />
+        <option value="$PROJECT_DIR$/src/Sensor.h" />
+        <option value="$PROJECT_DIR$/src/Sensor.cpp" />
       </list>
     </option>
   </component>
@@ -331,6 +346,8 @@
       <workItem from="1540719711232" duration="301000" />
       <workItem from="1540734194399" duration="2291000" />
       <workItem from="1540834552531" duration="7883000" />
+      <workItem from="1540880165957" duration="103000" />
+      <workItem from="1541094554886" duration="4473000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <created>1537698394148</created>
@@ -374,11 +391,18 @@
       <option name="project" value="LOCAL" />
       <updated>1538424136631</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="platformio speed change,&#10;Light IO logic removed,&#10;update lighter state removed">
+      <created>1540880256758</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1540880256758</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="167758000" />
+    <option name="totallyTimeSpent" value="172334000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -393,9 +417,9 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14278187" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14278187" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32960895" />
-      <window_info anchor="bottom" id="Messages" order="12" visible="true" weight="0.23638344" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.23638344" />
       <window_info anchor="bottom" id="CMake" order="11" weight="0.3267974" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50052685" side_tool="true" weight="0.3278867" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32897604" />
@@ -437,7 +461,8 @@
     <MESSAGE value="lighter start fix" />
     <MESSAGE value="event callback function added to LighterManager" />
     <MESSAGE value="on update event call fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="on update event call fix" />
+    <MESSAGE value="platformio speed change,&#10;Light IO logic removed,&#10;update lighter state removed" />
+    <option name="LAST_COMMIT_MESSAGE" value="platformio speed change,&#10;Light IO logic removed,&#10;update lighter state removed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -445,20 +470,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/program.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="23" lean-forward="true" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/program.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1054">
-          <caret line="62" column="36" lean-forward="true" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/program.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="544">
@@ -618,13 +629,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include/c++/4.8.2/functional">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="222">
-          <caret line="1003" column="33" selection-start-line="1003" selection-start-column="33" selection-end-line="1003" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
@@ -664,13 +668,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="181">
           <caret line="160" column="30" selection-start-line="160" selection-start-column="30" selection-end-line="160" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.platformio/packages/framework-arduinoespressif8266/cores/esp8266/Arduino.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="41" column="8" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -717,16 +714,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.platformio/packages/framework-arduinoespressif8266/libraries/SPI/SPI.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1173">
-          <caret line="69" column="40" selection-start-line="69" selection-start-column="40" selection-end-line="69" selection-end-column="40" />
-          <folding>
-            <element signature="e#938#958#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.platformio/packages/framework-arduinoespressif8266/cores/esp8266/core_esp8266_wiring_shift.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="370">
@@ -744,6 +731,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include/c++/4.8.2/functional">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1206">
+          <caret line="2173" column="10" selection-start-line="2173" selection-start-column="10" selection-end-line="2173" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Light.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
@@ -754,29 +748,69 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/LighterManager.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="14" column="35" selection-start-line="14" selection-start-column="35" selection-end-line="14" selection-end-column="35" />
+          <folding>
+            <element signature="e#42#66#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.platformio/packages/framework-arduinoespressif8266/libraries/SPI/SPI.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="58">
+          <caret line="24" column="19" lean-forward="true" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="19" />
+          <folding>
+            <element signature="e#938#958#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.platformio/packages/framework-arduinoespressif8266/cores/esp8266/Arduino.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="42" column="13" selection-start-line="42" selection-start-column="13" selection-end-line="42" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/LighterManager.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="44" column="29" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="29" />
+          <folding>
+            <element signature="e#100#118#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/program.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="138" column="48" lean-forward="true" selection-start-line="138" selection-start-column="48" selection-end-line="138" selection-end-column="48" />
+        <state relative-caret-position="214">
+          <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="147" selection-end-column="49" />
           <folding>
             <element signature="e#43#67#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/LighterManager.h">
+    <entry file="file://$PROJECT_DIR$/src/Sensor.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="371">
-          <caret line="70" column="23" selection-start-line="70" selection-start-column="12" selection-end-line="70" selection-end-column="23" />
+        <state relative-caret-position="425">
+          <caret line="25" column="15" selection-start-line="25" selection-start-column="15" selection-end-line="25" selection-end-column="37" />
+          <folding>
+            <element signature="e#84#102#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/LighterManager.cpp">
+    <entry file="file://$PROJECT_DIR$/src/Sensor.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="47" column="61" lean-forward="true" selection-start-line="47" selection-start-column="61" selection-end-line="47" selection-end-column="61" />
+        <state relative-caret-position="187">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
           <folding>
-            <element signature="e#42#66#0" expanded="true" />
+            <element signature="e#42#62#0" expanded="true" />
           </folding>
         </state>
       </provider>

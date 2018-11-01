@@ -10,23 +10,20 @@
 #include "ESP8266WiFiMulti.h"
 #include "../lib/ws/src/WebSocketsServer.h"
 
-#define YELLOW1_PIN 2
-#define YELLOW2_PIN 2
-#define YELLOW3_PIN 2
-#define GREEN_PIN 2
-#define RED_PIN 2
-
 #define CLOCK_PIN 14
 #define DATA_PIN 4
 #define LATCH_PIN 12
 
 #define BUTTON_PIN 5
 
-#define FIRST_YELLOW_LIGHTER_BYTE 0x01
-#define SECOND_YELLOW_LIGHTER_BYTE 0x02
-#define THIRD_YELLOW_LIGHTER_BYTE 0x04
-#define GREEN_LIGHTER_BYTE 0x08
-#define RED_LIGHTER_BYTE 0x10
+#define FIRST_YELLOW_LIGHTER_BYTE (1 << 0)
+#define SECOND_YELLOW_LIGHTER_BYTE (1 << 1)
+#define THIRD_YELLOW_LIGHTER_BYTE (1 << 2)
+#define GREEN_LIGHTER_BYTE (1 << 3)
+#define RED_LIGHTER_BYTE (1 << 4)
+
+
+
 #define USE_SERIAL Serial
 
 /**
@@ -35,22 +32,16 @@
  * First 8 bytes is data payload
  */
 
-enum ACTIONS_EMIT {
-    WHEEL_SENSOR_UPDATE = 0x01,
-    LIGHTER_STATE_UPDATE = 0x02,
-    CONTROL_LIGHTER_STATE_UPDATE = 0x04,
+enum WS_ACTIONS_EMIT {
+    CONTROL_LIGHTER_STATE_UPDATE = (1 << 0),
+    LIGHTER_STATE_UPDATE = (1 << 1),
+    RACE_RESULT = (1 << 2),
+    FALSE_START = (1 << 3)
 };
 
-enum ACTION_LISTEN {
+enum WS_ACTION_LISTEN {
     LIGHTER_START = 0x01,
     LIGHTER_TEST = 0x02,
-};
-
-uint8_t CONTROL_LIGHTER_DATA[4] = {
-        0x01, //LEFT FRONT
-        0x02, //LEFT REAR
-        0x04, //RIGHT FRONT
-        0x08, //RIGHT REAR
 };
 
 ESP8266WiFiMulti WiFiMulti = ESP8266WiFiMulti();

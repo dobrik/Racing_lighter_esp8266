@@ -51,4 +51,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(${PROJECT_NAME} ${SRC_LIST} src/program.cpp src/Light.cpp src/Light.h src/LighterManager.cpp src/LighterManager.h)
+add_executable(${PROJECT_NAME} ${SRC_LIST} src/program.cpp src/Light.cpp src/Light.h src/LighterManager.cpp src/LighterManager.h src/Sensor.cpp src/Sensor.h)

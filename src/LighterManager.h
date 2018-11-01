@@ -7,7 +7,6 @@
 
 
 #include <cstdint>
-#include <list>
 #include "Light.h"
 #include "../lib/virtualDelay/avdweb_VirtualDelay.h"
 
