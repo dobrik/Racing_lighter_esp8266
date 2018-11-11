@@ -7,6 +7,7 @@
 #include "SPI.h"
 #include "Light.h"
 #include "LighterManager.h"
+#include "SensorManager.h"
 #include "ESP8266WiFiMulti.h"
 #include "../lib/ws/src/WebSocketsServer.h"
 
@@ -21,6 +22,16 @@
 #define THIRD_YELLOW_LIGHTER_BYTE (1 << 2)
 #define GREEN_LIGHTER_BYTE (1 << 3)
 #define RED_LIGHTER_BYTE (1 << 4)
+
+#define FRONT_LEFT_SENSOR_PIN 13
+#define REAR_LEFT_SENSOR_PIN 15
+//#define FRONT_RIGHT_SENSOR_PIN 1
+//#define REAR_RIGHT_SENSOR_PIN 16
+
+#define FRONT_LEFT_LIGHTER_BYTE (1 << 0)
+#define REAR_LEFT_LIGHTER_BYTE (1 << 1)
+//#define FRONT_RIGHT_LIGHTER_BYTE (1 << 2)
+//#define REAR_RIGHT_LIGHTER_BYTE (1 << 3)
 
 
 
@@ -57,6 +68,11 @@ Light lighters[LIGHTS_COUNT] = {
 };
 
 LighterManager lighterManger = LighterManager(lighters);
+
+Sensor leftFrontSensor = Sensor(FRONT_LEFT_SENSOR_PIN, FRONT_LEFT_LIGHTER_BYTE);
+Sensor leftRearSensor = Sensor(REAR_LEFT_SENSOR_PIN, REAR_LEFT_LIGHTER_BYTE);
+
+SensorManager leftSensorManager = SensorManager(&leftFrontSensor, &leftRearSensor);
 
 uint8_t adminNum;
 
@@ -194,4 +210,5 @@ void setup() {
 void loop() {
     webSocket.loop();
     lighterManger.loop();
+    leftSensorManager.loop();
 }

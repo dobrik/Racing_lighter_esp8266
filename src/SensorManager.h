@@ -9,32 +9,33 @@
 #include "Sensor.h"
 #include "Light.h"
 
+typedef enum {
+    STATE_WAIT,
+    STATE_READY,
+    STATE_FORWARD,
+    STATE_BACKWARD
+} SMState;
+
 class SensorManager {
 public:
     SensorManager(Sensor *_frontSensor, Sensor *_rearSensor) : frontSensor(_frontSensor), rearSensor(_rearSensor) {};
 
-    void SensorManager::loop();
+    void loop();
 
-    typedef enum {
-        STATE_WAIT,
-        STATE_READY,
-        STATE_FORWARD,
-        STATE_BACKWARD
-    } SMState;
+    typedef std::function<void (SMState state, uint8_t *payload)> SensorManagerEvent;
 
-    typedef enum {
-        EVENT_SENSOR_UPDATE
-    } SMEvent;
+    void onUpdate(SensorManagerEvent _event);
 
     uint8_t data = 0x00;
-
     Sensor *frontSensor;
     Sensor *rearSensor;
 
     SMState state = STATE_WAIT;
+    SMState statePrev = STATE_WAIT;
 
 private:
-    void init();
+    SensorManagerEvent event;
+    void runEvent(SMState state);
 };
 
 

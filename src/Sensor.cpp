@@ -5,34 +5,15 @@
 #include <Arduino.h>
 #include "Sensor.h"
 
-Sensor::Sensor(uint8_t sensorPin, Light *_light) {
+Sensor::Sensor(uint8_t sensorPin, uint8_t _dataByte) {
     pinMode(sensorPin, INPUT);
     pin = sensorPin;
-    light = _light;
+    dataByte = _dataByte;
 }
 
 void Sensor::check(uint16_t checkInterval) {
-    if (digitalRead(pin) != current_state && (millis() - lastCheck) > checkInterval) {
-        current_state = digitalRead(pin);
-
-        switch (digitalRead(pin)) {
-            case HIGH:
-                runEvent(SENSOR_ENABLED);
-                break;
-            case LOW:
-                runEvent(SENSOR_DISABLED);
-                break;
-        }
+    if (digitalRead(pin) != state && (millis() - lastCheck) > checkInterval) {
+        state = digitalRead(pin);
         lastCheck = millis();
     }
-}
-
-void Sensor::runEvent(SEType event_type) {
-    if (event) {
-        event(event_type, light);
-    }
-}
-
-void Sensor::onEvent(Sensor::SensorEvent _event) {
-    event = _event;
 }

@@ -11,31 +11,18 @@
 #include <Arduino.h>
 #include "Light.h"
 
-typedef enum {
-    SENSOR_ENABLED = HIGH,
-    SENSOR_DISABLED = LOW
-} SEType;
-
-
 class Sensor {
 
 public:
-    typedef std::function<void (SEType event_type, Light *_light)> SensorEvent;
-    Sensor(uint8_t sensorPin, Light *_light);
-    void onEvent(SensorEvent _event);
+    Sensor(uint8_t sensorPin, uint8_t _dataByte);
 
     void check(uint16_t checkInterval);
 
     uint8_t pin;
-    int current_state = LOW;
+    int state = LOW;
+    uint8_t dataByte;
 private:
-    SensorEvent event;
-
-    Light *light;
-
     uint32_t lastCheck = 0;
-
-    void runEvent(SEType event_type);
 };
 
 

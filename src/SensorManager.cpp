@@ -3,19 +3,39 @@
 //
 
 #include "SensorManager.h"
+#define USE_SERIAL Serial
 
 void SensorManager::loop() {
-    rearSensor->check(200);
     frontSensor->check(200);
+    rearSensor->check(200);
+
+    if (frontSensor->state == HIGH) {
+        if (rearSensor->state == HIGH) {
+            state = STATE_READY;
+        } else {
+            state = STATE_BACKWARD;
+        }
+    } else if (rearSensor->state == HIGH) {
+        state = STATE_FORWARD;
+    } else {
+        state = STATE_WAIT;
+    }
+
+    data = (frontSensor->state << frontSensor->dataByte)|(rearSensor->state << rearSensor->dataByte);
+    if (state != statePrev) {
+        USE_SERIAL.printf("Sensor manager event state updated = '%d'\n", state);
+        USE_SERIAL.printf("Sensor data = '%d'\n", data);
+        runEvent(state);
+        statePrev = state;
+    }
 }
 
-void SensorManager::init() {
-    void backwardUpdate(SEType event_type) {
-        switch (event_type) {
-            case SENSOR_ENABLED:
-                break;
-            case SENSOR_DISABLED:
-                break;
-        }
+void SensorManager::onUpdate(SensorManager::SensorManagerEvent _event) {
+    event = _event;
+}
+
+void SensorManager::runEvent(SMState state) {
+    if (event) {
+        event(state, &data);
     }
 }
