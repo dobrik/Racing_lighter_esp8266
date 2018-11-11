@@ -23,10 +23,10 @@
 #define GREEN_LIGHTER_BYTE (1 << 3)
 #define RED_LIGHTER_BYTE (1 << 4)
 
-#define FRONT_LEFT_SENSOR_PIN 13
-#define REAR_LEFT_SENSOR_PIN 15
-//#define FRONT_RIGHT_SENSOR_PIN 1
-//#define REAR_RIGHT_SENSOR_PIN 16
+#define FRONT_LEFT_SENSOR_PIN 16
+#define REAR_LEFT_SENSOR_PIN 2
+//#define FRONT_RIGHT_SENSOR_PIN 13
+//#define REAR_RIGHT_SENSOR_PIN 15
 
 #define FRONT_LEFT_LIGHTER_BYTE (1 << 0)
 #define REAR_LEFT_LIGHTER_BYTE (1 << 1)
@@ -43,16 +43,19 @@
  * Last 8 bytes is data payload
  */
 
-enum WS_ACTIONS_EMIT {
+// second byte data of lighter,First byte data of control lighter
+uint8_t lightersShiftData[2] = {0, 0};
+
+typedef enum WS_ACTIONS_EMIT {
     CONTROL_LIGHTER_STATE_UPDATE = (1 << 0),
     LIGHTER_STATE_UPDATE = (1 << 1),
     RACE_RESULT = (1 << 2),
     FALSE_START = (1 << 3)
-};
+} WS_ACTIONS;
 
 enum WS_ACTION_LISTEN {
-    LIGHTER_START = 0x01,
-    LIGHTER_TEST = 0x02,
+    LIGHTER_START = (1 << 0),
+    LIGHTER_TEST = (1 << 1)
 };
 
 ESP8266WiFiMulti WiFiMulti = ESP8266WiFiMulti();
@@ -76,7 +79,7 @@ SensorManager leftSensorManager = SensorManager(&leftFrontSensor, &leftRearSenso
 
 uint8_t adminNum;
 
-void sendWebSocketActionData(uint8_t action, uint8_t payload) {
+void sendWebSocketActionData(WS_ACTIONS action, uint8_t payload) {
     uint8_t packet[2] = {
             action, payload
     };
@@ -137,21 +140,28 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 
 }
 
-void lighterStateChange(uint8_t *payload);
+void lighterStateChange();
 
 void lighterManagerEvent(LMEType event_type, uint8_t *payload, size_t length) {
     switch (event_type) {
         case LIGHTER_UPDATE:
-            USE_SERIAL.printf("Payload send: '%d' \n", *payload);
             sendWebSocketActionData(LIGHTER_STATE_UPDATE, *payload);
-            lighterStateChange(payload);
+            lightersShiftData[1] = *payload;
+            lighterStateChange();
             break;
     }
 }
 
-void lighterStateChange(uint8_t *payload) {
+void sensorManagerEvent(SMState state, uint8_t *payload) {
+    lightersShiftData[0] = *payload;
+    lighterStateChange();
+}
+
+void lighterStateChange() {
     digitalWrite(LATCH_PIN, LOW);
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, *payload);
+    for (int i = 0; i < sizeof(lightersShiftData); i++) {
+        shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, lightersShiftData[i]);
+    }
     digitalWrite(LATCH_PIN, HIGH);
 }
 
@@ -205,6 +215,7 @@ void setup() {
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
     lighterManger.onEvent(lighterManagerEvent);
+    leftSensorManager.onUpdate(sensorManagerEvent);
 }
 
 void loop() {
