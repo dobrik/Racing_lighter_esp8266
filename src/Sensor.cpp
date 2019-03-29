@@ -5,10 +5,9 @@
 #include <Arduino.h>
 #include "Sensor.h"
 
-Sensor::Sensor(uint8_t sensorPin, uint8_t _dataByte) {
+Sensor::Sensor(uint8_t sensorPin) {
     pinMode(sensorPin, INPUT);
     pin = sensorPin;
-    dataByte = _dataByte;
 }
 
 void Sensor::check(uint16_t checkInterval) {

@@ -14,13 +14,12 @@
 class Sensor {
 
 public:
-    Sensor(uint8_t sensorPin, uint8_t _dataByte);
+    Sensor(uint8_t sensorPin);
 
     void check(uint16_t checkInterval);
 
     uint8_t pin;
     int state = LOW;
-    uint8_t dataByte;
 private:
     uint32_t lastCheck = 0;
 };

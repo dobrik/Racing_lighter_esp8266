@@ -10,9 +10,9 @@
 
 class Light {
 public:
-    Light(uint8_t dataByte);
+    Light(uint16_t dataByteLeft, uint16_t dataByteRight);
 
-    uint8_t dataByte;
+    uint16_t dataByteLeft, dataByteRight;
 };
 
 

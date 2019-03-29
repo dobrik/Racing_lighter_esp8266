@@ -3,6 +3,7 @@
 //
 
 #include "SensorManager.h"
+
 #define USE_SERIAL Serial
 
 void SensorManager::loop() {
@@ -11,31 +12,49 @@ void SensorManager::loop() {
 
     if (frontSensor->state == HIGH) {
         if (rearSensor->state == HIGH) {
-            state = STATE_READY;
+            state = SENSOR_READY;
         } else {
-            state = STATE_BACKWARD;
+            state = SENSOR_BACKWARD;
         }
     } else if (rearSensor->state == HIGH) {
-        state = STATE_FORWARD;
+        state = SENSOR_FORWARD;
     } else {
-        state = STATE_WAIT;
+        state = SENSOR_WAIT;
     }
 
-    data = (frontSensor->state << frontSensor->dataByte)|(rearSensor->state << rearSensor->dataByte);
+    if (functionDelay != 0 && falseStartEvent) {
+        Delay.start(functionDelay);
+        if (Delay.elapsed()) {
+            falseStartEvent(this, callbackIteration);
+            callbackIteration++;
+        }
+    }
+
     if (state != statePrev) {
         USE_SERIAL.printf("Sensor manager event state updated = '%d'\n", state);
-        USE_SERIAL.printf("Sensor data = '%d'\n", data);
-        runEvent(state);
+        runEvent(state, this);
         statePrev = state;
     }
+}
+
+void SensorManager::falseStart() {
+    functionDelay = 500;
+}
+
+void SensorManager::reset(){
+    functionDelay = 0;
 }
 
 void SensorManager::onUpdate(SensorManager::SensorManagerEvent _event) {
     event = _event;
 }
 
-void SensorManager::runEvent(SMState state) {
+void SensorManager::runEvent(SMState state, SensorManager *manager) {
     if (event) {
-        event(state, &data);
+        event(state, manager);
     }
+}
+
+void SensorManager::onFalseStart(SensorManager::SensorManagerOnFalseStartEvent _event) {
+    falseStartEvent = _event;
 }

@@ -5,6 +5,7 @@
 #include "Light.h"
 #include "SPI.h"
 
-Light::Light(uint8_t dataByte) {
-    this->dataByte = dataByte;
+Light::Light(uint16_t dataByteLeft, uint16_t dataByteRight) {
+    this->dataByteLeft = dataByteLeft;
+    this->dataByteRight = dataByteRight;
 }

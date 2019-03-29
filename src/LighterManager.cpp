@@ -4,67 +4,68 @@
 
 #include "ESP8266WiFi.h"
 #include "LighterManager.h"
-#define USE_SERIAL Serial
 
-LighterManager::LighterManager(Light _lights[LIGHTS_COUNT]) {
-    lights = _lights;
-}
+#define USE_SERIAL Serial
 
 void LighterManager::loop() {
     if (functionDelay != 0) {
         Delay.start(functionDelay);
         if (Delay.elapsed()) {
-            (this->*((LighterManager*)this)->LighterManager::callback)();
+            (this->*((LighterManager *) this)->LighterManager::callback)();
         }
     }
 }
 
 void LighterManager::lighterTestStart(int delay) {
+    state = LIGHTER_STATE_TEST;
     functionDelay = delay;
     USE_SERIAL.println("lighterTestStart call");
     callback = &LighterManager::lighterTestFunction;
 }
 
 void LighterManager::lighterStart(int delay) {
+    state = LIGHTER_STATE_COUNTDOWN;
     functionDelay = delay;
     USE_SERIAL.println("lighterStart call");
     callback = &LighterManager::lighterStartFunction;
 }
 
-void LighterManager::onEvent(LighterManagerEvent _event){
+void LighterManager::reset() {
+    functionDelay = 0;
+    callbackIteration = 0;
+    state = LIGHTER_STATE_READY;
+    stage = LIGHTER_STAGE_STANDBY;
+    callback = nullptr;
+    runEvent(stage);
+}
+
+void LighterManager::onEvent(LighterManagerEvent _event) {
     event = _event;
 }
 
-void LighterManager::runEvent(LMEType event_type, uint8_t * payload, size_t length) {
-    if(event) {
-        event(event_type, payload, length);
+void LighterManager::runEvent(LighterStage stage) {
+    if (event) {
+        event(stage);
     }
 }
 
 void LighterManager::lighterTestFunction() {
-    USE_SERIAL.println("lighterTestFunction callback call");
-    if (lighterTestIteration >= sizeof(LIGHTER_TEST_STEPS)) {
-        lighterData = 0x00;
-        lighterTestIteration = 0;
-        functionDelay = 0;
+    if (callbackIteration >= (sizeof(LIGHTER_TEST_STEPS) / sizeof(LighterStage))) {
+        reset();
     } else {
-        lighterData ^= lights[LIGHTER_TEST_STEPS[lighterTestIteration]].dataByte;
-        lighterTestIteration++;
+        stage = LIGHTER_TEST_STEPS[callbackIteration];
+        callbackIteration++;
+        runEvent(stage);
     }
 
-    runEvent(LIGHTER_UPDATE, &lighterData, sizeof(lighterData));
 }
 
 void LighterManager::lighterStartFunction() {
-    USE_SERIAL.println("lighterStartFunction callback call");
-    if (lighterStartIteration >= sizeof(LIGHTER_START_STEPS)) {
-        lighterData = 0x00;
-        lighterStartIteration = 0;
-        functionDelay = 0;
+    if (callbackIteration >= (sizeof(LIGHTER_START_STEPS) / sizeof(LighterStage))) {
+        reset();
     } else {
-        lighterData ^= lights[LIGHTER_START_STEPS[lighterStartIteration]].dataByte;
-        lighterStartIteration++;
+        stage = LIGHTER_START_STEPS[callbackIteration];
+        callbackIteration++;
+        runEvent(stage);
     }
-
-    runEvent(LIGHTER_UPDATE, &lighterData, sizeof(lighterData));
 }

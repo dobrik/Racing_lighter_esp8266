@@ -8,12 +8,13 @@
 
 #include "Sensor.h"
 #include "Light.h"
+#include "../lib/virtualDelay/avdweb_VirtualDelay.h"
 
 typedef enum {
-    STATE_WAIT,
-    STATE_READY,
-    STATE_FORWARD,
-    STATE_BACKWARD
+    SENSOR_WAIT,
+    SENSOR_READY,
+    SENSOR_FORWARD,
+    SENSOR_BACKWARD
 } SMState;
 
 class SensorManager {
@@ -22,20 +23,35 @@ public:
 
     void loop();
 
-    typedef std::function<void (SMState state, uint8_t *payload)> SensorManagerEvent;
+    typedef std::function<void (SMState state, SensorManager *manager)> SensorManagerEvent;
+
+    typedef std::function<void (SensorManager *manager, uint8_t iteration)> SensorManagerOnFalseStartEvent;
+
+    void falseStart();
+
+    void reset();
 
     void onUpdate(SensorManagerEvent _event);
 
-    uint8_t data = 0x00;
+    void onFalseStart(SensorManagerOnFalseStartEvent _event);
+
+    VirtualDelay Delay;
+
     Sensor *frontSensor;
     Sensor *rearSensor;
 
-    SMState state = STATE_WAIT;
-    SMState statePrev = STATE_WAIT;
+    SMState state = SENSOR_WAIT;
+    SMState statePrev = SENSOR_WAIT;
+
+    uint8_t callbackIteration = 0;
+    long functionDelay = 0;
 
 private:
     SensorManagerEvent event;
-    void runEvent(SMState state);
+
+    SensorManagerOnFalseStartEvent falseStartEvent;
+
+    void runEvent(SMState state, SensorManager *manager);
 };
 
 
