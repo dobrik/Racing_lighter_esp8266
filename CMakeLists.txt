@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
-project(ws)
+project(DragLighterController)
 
-include(CMakeListsPrivate.txt)
+include(CMakeListsPrivate8266.txt)
+include(CMakeListsPrivate32.txt)
 
 add_custom_target(
     PLATFORMIO_BUILD ALL

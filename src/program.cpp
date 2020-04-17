@@ -2,51 +2,55 @@
 // Created by Dobrik on 15.08.2018.
 //
 
-#include "ESP8266WiFi.h"
-#include "Hash.h"
+#include <Arduino.h>
+
+#ifdef ESP8266
+
+#include <ESP8266WiFi.h>
+#endif
+
+
+#ifdef ESP32
+
+#include <WiFi.h>
+#include <WiFiAP.h>
+
+#endif
+
 #include "Pins.h"
 #include "SPI.h"
 #include "Light.h"
 #include "LighterManager.h"
 #include "SensorManager.h"
-#include "ESP8266WiFiMulti.h"
-#include <ESP8266WiFi.h>
 #include "../lib/ws/src/WebSocketsServer.h"
 
-#define CLOCK_PIN D5
-#define DATA_PIN D2
-#define LATCH_PIN D6
+#define CLOCK_PIN 2
+#define DATA_PIN 4
+#define LATCH_PIN 15
 
-#define BUTTON_PIN D1
+#define TEST_BUTTON_PIN 21
 
-#define FRONT_LEFT_YELLOW_LIGHTER_BYTE (1 << 8)
-#define REAR_LEFT_YELLOW_LIGHTER_BYTE (1 << 9)
-#define FRONT_RIGHT_YELLOW_LIGHTER_BYTE (1 << 10)
-#define REAR_RIGHT_YELLOW_LIGHTER_BYTE (1 << 11)
+#define FRONT_LEFT_SENSOR_PIN 27
+#define REAR_LEFT_SENSOR_PIN 14
+#define FRONT_RIGHT_SENSOR_PIN 12
+#define REAR_RIGHT_SENSOR_PIN 13
 
-
-#define FIRST_LEFT_YELLOW_LIGHTER_BYTE (1 << 12)
-#define FIRST_RIGHT_YELLOW_LIGHTER_BYTE (1 << 13)
-#define SECOND_LEFT_YELLOW_LIGHTER_BYTE (1 << 14)
-#define SECOND_RIGHT_YELLOW_LIGHTER_BYTE (1 << 15)
-#define THIRD_LEFT_YELLOW_LIGHTER_BYTE (1 << 0)
-#define THIRD_RIGHT_YELLOW_LIGHTER_BYTE (1 << 1)
-#define GREEN_LEFT_LIGHTER_BYTE (1 << 2)
-#define GREEN_RIGHT_LIGHTER_BYTE (1 << 3)
-#define RED_LEFT_LIGHTER_BYTE (1 << 4)
-#define RED_RIGHT_LIGHTER_BYTE (1 << 5)
-
-#define FRONT_LEFT_SENSOR_PIN D0
-#define REAR_LEFT_SENSOR_PIN D4
-#define FRONT_RIGHT_SENSOR_PIN D7
-#define REAR_RIGHT_SENSOR_PIN D8
-
-#define FRONT_LEFT_LIGHTER_BYTE (1 << 0)
-#define REAR_LEFT_LIGHTER_BYTE (1 << 1)
-//#define FRONT_RIGHT_LIGHTER_BYTE (1 << 2)
-//#define REAR_RIGHT_LIGHTER_BYTE (1 << 3)
+#define FRONT_LEFT_YELLOW_LIGHTER_BYTE (1 << 0)
+#define REAR_LEFT_YELLOW_LIGHTER_BYTE (1 << 1)
+#define FRONT_RIGHT_YELLOW_LIGHTER_BYTE (1 << 2)
+#define REAR_RIGHT_YELLOW_LIGHTER_BYTE (1 << 3)
 
 
+#define FIRST_LEFT_YELLOW_LIGHTER_BYTE (1 << 4)
+#define FIRST_RIGHT_YELLOW_LIGHTER_BYTE (1 << 5)
+#define SECOND_LEFT_YELLOW_LIGHTER_BYTE (1 << 6)
+#define SECOND_RIGHT_YELLOW_LIGHTER_BYTE (1 << 7)
+#define THIRD_LEFT_YELLOW_LIGHTER_BYTE (1 << 8)
+#define THIRD_RIGHT_YELLOW_LIGHTER_BYTE (1 << 9)
+#define GREEN_LEFT_LIGHTER_BYTE (1 << 10)
+#define GREEN_RIGHT_LIGHTER_BYTE (1 << 11)
+#define RED_LEFT_LIGHTER_BYTE (1 << 12)
+#define RED_RIGHT_LIGHTER_BYTE (1 << 13)
 
 #define USE_SERIAL Serial
 
@@ -71,8 +75,6 @@ enum WS_ACTION_LISTEN {
     LIGHTER_TEST = (1 << 1)
 };
 
-ESP8266WiFiMulti WiFiMulti = ESP8266WiFiMulti();
-bool wifiResult = WiFi.softAP("RacingLighter", "12345678");
 
 WebSocketsServer webSocket = WebSocketsServer(81);
 
@@ -102,13 +104,15 @@ void sendWebSocketActionData(WS_ACTIONS action) {
     if (adminNum == -1) {
         return;
     }
-    uint8_t packet[4];
-    packet[0] = action;
 
     uint8_t shiftData[2];
     memcpy(shiftData, &lightersShiftData, sizeof(shiftData));
-    memcpy(&packet[1], &shiftData[0], sizeof(packet));
-    memcpy(&packet[2], &shiftData[1], sizeof(packet));
+
+    uint8_t packet[4] = {0, 0, 0, 0};
+    packet[0] = action;
+
+    packet[1] = shiftData[0];
+    packet[2] = shiftData[1];
 
     USE_SERIAL.printf("Send action packet[0] '%d'\n", packet[0]);
     USE_SERIAL.printf("Send data packet[1] '%d'\n", packet[1]);
@@ -119,8 +123,10 @@ void sendWebSocketActionData(WS_ACTIONS action) {
 
 void processAction(uint8_t *payload, uint8_t size) {
     if (payload[0] == LIGHTER_START) {
-        USE_SERIAL.println("LIGHTER_START");
-        lighterManger.lighterStart();
+        if (leftSensorManager.state == SENSOR_READY && rightSensorManager.state == SENSOR_READY) {
+            USE_SERIAL.println("LIGHTER_START");
+            lighterManger.lighterStart();
+        }
     } else if (payload[0] == LIGHTER_TEST) {
         USE_SERIAL.println("LIGHTER_TEST");
         lighterManger.lighterTestStart();
@@ -134,13 +140,14 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     switch (type) {
         case WStype_DISCONNECTED:
             USE_SERIAL.printf("[%u] Disconnected!\n", num);
-            hexdump(payload, length);
+            //hexdump(payload, length);
             break;
         case WStype_CONNECTED: {
             IPAddress ip = webSocket.remoteIP(num);
             adminNum = num;
             USE_SERIAL.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 
+            sendWebSocketActionData(LIGHTER_STATE_UPDATE);
             // send message to client
             webSocket.sendTXT(num, "Connected");
         }
@@ -157,10 +164,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         case WStype_BIN:
             USE_SERIAL.printf("[%u] get binary length: %u\n", num, length);
             processAction(payload, length);
-            hexdump(payload, length);
+            //hexdump(payload, length);
 
-            // send message to client
-            webSocket.sendBIN(num, payload, length);
             break;
         case WStype_ERROR:
             USE_SERIAL.println("Error\n");
@@ -180,20 +185,18 @@ void lighterManagerEvent(LighterStage stage) {
     lightersShiftData &= ~(greenLight.dataByteLeft | greenLight.dataByteRight);
     lightersShiftData &= ~(redLight.dataByteLeft | redLight.dataByteRight);
 
-    if (leftSensorManager.state == SENSOR_READY && rightSensorManager.state == SENSOR_READY) {
-        switch (stage) {
-            case LIGHTER_STAGE_STOP:
-                lightersShiftData |= (redLight.dataByteLeft | redLight.dataByteRight);
-            case LIGHTER_STAGE_RACE:
-                lightersShiftData |= (greenLight.dataByteLeft | greenLight.dataByteRight);
-            case LIGHTER_STAGE_READY_3:
-                lightersShiftData |= (thirdYellowLight.dataByteLeft | thirdYellowLight.dataByteRight);
-            case LIGHTER_STAGE_READY_2:
-                lightersShiftData |= (secondYellowLight.dataByteLeft | secondYellowLight.dataByteRight);
-            case LIGHTER_STAGE_READY_1:
-                lightersShiftData |= (firstYellowLight.dataByteLeft | firstYellowLight.dataByteRight);
-                break;
-        }
+    switch (stage) {
+        case LIGHTER_STAGE_STOP:
+            lightersShiftData |= (redLight.dataByteLeft | redLight.dataByteRight);
+        case LIGHTER_STAGE_RACE:
+            lightersShiftData |= (greenLight.dataByteLeft | greenLight.dataByteRight);
+        case LIGHTER_STAGE_READY_3:
+            lightersShiftData |= (thirdYellowLight.dataByteLeft | thirdYellowLight.dataByteRight);
+        case LIGHTER_STAGE_READY_2:
+            lightersShiftData |= (secondYellowLight.dataByteLeft | secondYellowLight.dataByteRight);
+        case LIGHTER_STAGE_READY_1:
+            lightersShiftData |= (firstYellowLight.dataByteLeft | firstYellowLight.dataByteRight);
+            break;
     }
     sendWebSocketActionData(LIGHTER_STATE_UPDATE);
     sendStateChange();
@@ -215,6 +218,8 @@ void falseStartCallback(SensorManager *manager, uint8_t iteration) {
         manager->reset();
     }
 
+    sendWebSocketActionData(FALSE_START);
+    sendWebSocketActionData(LIGHTER_STATE_UPDATE);
     sendStateChange();
 }
 
@@ -247,6 +252,7 @@ void sensorManagerEvent(SMState state, SensorManager *manager) {
     }
     USE_SERIAL.print(" .Sensor state chanded: ");
     USE_SERIAL.println(state);
+    sendWebSocketActionData(LIGHTER_STATE_UPDATE);
     sendStateChange();
 }
 
@@ -260,7 +266,7 @@ void sendShift(uint16_t data) {
     uint8_t shiftData[2] = {0, 0};
     memcpy(shiftData, &data, sizeof(shiftData));
     digitalWrite(LATCH_PIN, LOW);
-    for (int i = 0; i <= 1; i++) {
+    for (int i = 1; i >= 0; i--) {
         shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, shiftData[i]);
     }
     digitalWrite(LATCH_PIN, HIGH);
@@ -280,6 +286,16 @@ void testToggle() {
 }
 
 void setup() {
+
+#ifdef ESP8266
+    bool wifiResult = WiFi.softAP("RacingLighter", "12345678");
+#endif
+
+#ifdef ESP32
+    WiFi.softAP("RacingLighter", "12345678");
+#endif
+
+
     USE_SERIAL.begin(115200);
     USE_SERIAL.setDebugOutput(true);
     USE_SERIAL.println();
@@ -292,15 +308,8 @@ void setup() {
         delay(1000);
     }
 
-    WiFi.setSleepMode(WIFI_NONE_SLEEP);
-    WiFiMulti.addAP("Dobrik_third", "12345678");
-
-    while (!wifiResult) {
-        delay(100);
-    }
-
-    pinMode(BUTTON_PIN, INPUT);
-    attachInterrupt(BUTTON_PIN, testToggle, ONLOW);
+    pinMode(TEST_BUTTON_PIN, INPUT_PULLUP);
+    attachInterrupt(TEST_BUTTON_PIN, testToggle, ONLOW);
 
     /**
      * 74HC595 begin

@@ -10,13 +10,13 @@ void SensorManager::loop() {
     frontSensor->check(200);
     rearSensor->check(200);
 
-    if (frontSensor->state == HIGH) {
-        if (rearSensor->state == HIGH) {
+    if (frontSensor->state == LOW) {
+        if (rearSensor->state == LOW) {
             state = SENSOR_READY;
         } else {
             state = SENSOR_BACKWARD;
         }
-    } else if (rearSensor->state == HIGH) {
+    } else if (rearSensor->state == LOW) {
         state = SENSOR_FORWARD;
     } else {
         state = SENSOR_WAIT;

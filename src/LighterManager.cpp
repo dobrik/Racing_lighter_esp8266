@@ -2,7 +2,6 @@
 // Created by Dobrik on 9/23/2018.
 //
 
-#include "ESP8266WiFi.h"
 #include "LighterManager.h"
 
 #define USE_SERIAL Serial

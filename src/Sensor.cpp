@@ -6,7 +6,7 @@
 #include "Sensor.h"
 
 Sensor::Sensor(uint8_t sensorPin) {
-    pinMode(sensorPin, INPUT);
+    pinMode(sensorPin, INPUT_PULLUP);
     pin = sensorPin;
 }
 

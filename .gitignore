@@ -4,4 +4,4 @@
 cmake-build-debug
 .travis.yml
 cmake-build-debug-mingw
-CMakeListsPrivate.txt
+CMakeListsPrivate8266.txt
